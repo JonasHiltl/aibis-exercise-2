@@ -30,8 +30,8 @@ LEVERS = ["OverTime", "BusinessTravel", "MonthlyIncome", "PercentSalaryHike", "J
           "YearsSinceLastPromotion", "YearsWithCurrManager", "TrainingTimesLastYear", "EnvironmentSatisfaction",
           "JobSatisfaction", "WorkLifeBalance", "RelationshipSatisfaction", "JobInvolvement"]
 CASES = {"Clear leaver": 688, "Clear stayer": 1179, "Border case": 1167}
-GROUPINGS = ["Department", "JobRole", "OverTime", "BusinessTravel", "MaritalStatus", "Age", "MonthlyIncome",
-             "YearsAtCompany"]
+GROUPINGS = ["Department", "JobRole", "OverTime", "BusinessTravel", "MaritalStatus", "StockOptionLevel", "Age",
+             "MonthlyIncome", "YearsAtCompany"]
 
 RAW = pd.read_csv("WA_Fn-UseC_-HR-Employee-Attrition.csv")
 
@@ -129,6 +129,8 @@ def workforce_fig(feature):
         groups = groups.map(lambda b: f"{b.left + 1:,.0f}–{b.right:,.0f}")
     if feature == "OverTime":
         groups = groups.map({"Yes": "Overtime", "No": "No overtime"})
+    if feature == "StockOptionLevel":
+        groups = groups.map(lambda level: f"Level {level}" if level else "No stock options")
     cells = Y.groupby(groups.astype(str).str.replace("_", " ").values).agg(rate="mean", n="size", left="sum")
     cells = cells.reset_index(names="label").assign(id=lambda d: d["label"], parent="all")
     root = pd.DataFrame([{"id": "all", "label": f"All employees · {BASE_RATE:.0%}", "parent": "", "rate": BASE_RATE,
